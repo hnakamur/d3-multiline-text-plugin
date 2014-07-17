@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<div id='example'></div>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.10/d3.min.js"></script>
+<script src="multiline-text.js"></script>
+<script>
+
+var frameWidth = 400;
+var frameHeight = 340;
+
+var svg = d3.select("#example").append("svg")
+  .attr({
+    width: frameWidth,
+    height: frameHeight + 30
+  });
+
+var lineHeight = 1.4;
+var rects = [
+  {x: 20, y: 40, w: 120, h: 60, text: 'Data-Driven\nDocuments'},
+
+  {x: 200, y:  20, w: 180, h: 40, text: 'Selections'},
+  {x: 200, y:  80, w: 180, h: 40, text: 'Dynamic Properties'},
+  {x: 200, y: 140, w: 180, h: 40, text: 'Enter and Exit'},
+  {x: 200, y: 200, w: 180, h: 60, text: 'Transformation,\nnot Representation'},
+  {x: 200, y: 280, w: 180, h: 40, text: 'Transitions'}
+];
+
+function midY(rect) {
+  return rect.y + rect.h / 2;
+}
+
+function leftX(rect) {
+  return rect.x;
+}
+
+function rightX(rect) {
+  return rect.x + rect.w;
+}
+
+var connectors = [
+  {points: [{x: rightX(rects[0]), y: midY(rects[0])}, {x: leftX(rects[1]), y: midY(rects[1])}]},
+  {points: [{x: rightX(rects[0]), y: midY(rects[0])}, {x: leftX(rects[2]), y: midY(rects[2])}]},
+  {points: [{x: rightX(rects[0]), y: midY(rects[0])}, {x: leftX(rects[3]), y: midY(rects[3])}]},
+  {points: [{x: rightX(rects[0]), y: midY(rects[0])}, {x: leftX(rects[4]), y: midY(rects[4])}]},
+  {points: [{x: rightX(rects[0]), y: midY(rects[0])}, {x: leftX(rects[5]), y: midY(rects[5])}]}
+];
+
+svg.append('rect')
+  .attr({
+    'class': 'outer-frame',
+    'x': 0,
+    'y': 0,
+    'width': frameWidth,
+    'height': frameHeight,
+    'rx': 10,
+    'ry': 10,
+    'stroke': '#0083B8',
+    'stroke-width': 1,
+    'fill': 'none'
+  });
+
+var line = d3.svg.line()
+  .x(function(d) {return d.x;})
+  .y(function(d) {return d.y;});
+
+svg.selectAll('path.connector')
+  .data(connectors).enter().append('path')
+  .attr({
+    'class': 'connector',
+    'd': function(d) {return line(d.points);},
+    'stroke': '#0083B8',
+    'stroke-width': 1,
+    'fill': 'none'
+  });
+
+var g = svg.selectAll('g.block')
+  .data(rects).enter().append('g')
+  .attr({
+    class: 'block',
+    transform: function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    },
+  });
+
+g.append('rect')
+  .attr({
+    'width': function(d) { return d.w; },
+    'height': function(d) { return d.h; },
+    'fill': 'none',
+    'stroke': '#00C9F9',
+    'stroke-width': 1
+  });
+
+var mt = d3.multilineText();
+
+g.append('text')
+  .call(mt);
+</script>
+</body>
+</html>
